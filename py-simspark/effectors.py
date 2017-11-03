@@ -1,3 +1,6 @@
+# TODO(MESSAGES) Turn into actual classes the parse_preceptors can return
+
+
 def message_factory(effector_string):
     """Makes messages easy to define"""
     def message(**kwargs):

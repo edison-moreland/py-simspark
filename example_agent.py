@@ -3,8 +3,7 @@ import sys
 import random as rand
 from agent import BaseAgent
 
-HOST = '192.168.1.166'
-PORT = 3100
+HOST, PORT = sys.argv[1:]
 
 
 class ExampleAgent(BaseAgent):

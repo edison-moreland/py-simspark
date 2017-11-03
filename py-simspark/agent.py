@@ -67,8 +67,9 @@ class BaseAgent(SimSparkServer):
         self.cycle_message += ef.say(message=message)
 
     # Server stuff
-    def _parse_preceptors(self, raw_preceptors):  # TODO Actually implement this
+    def _parse_preceptors(self, raw_preceptors):
         """Takes raw preceptor data and gives usable data"""
+        # TODO(PRECEPTORS) Find a good S-Expression to parse response from the server
         return raw_preceptors
 
     def _initialize_on_server(self):

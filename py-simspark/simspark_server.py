@@ -1,5 +1,6 @@
 import socket
 import struct
+import sys
 
 
 class SimSparkServer(object):
@@ -11,7 +12,7 @@ class SimSparkServer(object):
 
     def connect(self):
         """Connect socket to SimSpark server"""
-        self.sock.connect((self.host, self.port))
+        self.sock.connect((self.host, self.port))  # TODO: This can be so much better
 
     def disconnect(self):
         """Disconnect socket from SimSpark server"""
@@ -42,7 +43,10 @@ class SimSparkServer(object):
         """
         # get header
         prefix_raw = self.sock.recv(4)
-        payload_length = struct.unpack("!I", prefix_raw)
+        try:
+            payload_length = struct.unpack("!I", prefix_raw)
+        except struct.error:
+            sys.exit("No data received from server, it probably stopped. Exiting")
 
         # get rest of data
         raw_payload = self.sock.recv(payload_length[0])

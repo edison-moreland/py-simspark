@@ -1,6 +1,8 @@
 from simspark_server import SimSparkServer
 import effectors as ef
 
+# TODO(LOGGING) Figure out how to use the logging library
+
 
 class BaseAgent(SimSparkServer):
     model_path = "rsg/agent/nao/nao.rsg"  # Defaults to Nao model
@@ -23,6 +25,7 @@ class BaseAgent(SimSparkServer):
     # Commands
     def synchronize(self):
         """Sent after every cycle of the server if AgentSyncMode is enabled, auto appended after every cycle"""
+        # TODO(LOGGING) Log appending syncronize message
         self.cycle_message += ef.synchronize()
 
     def set_hinge_joint(self, name: str, axis1_speed: float):
@@ -33,6 +36,7 @@ class BaseAgent(SimSparkServer):
             name: Name of joint to set
             axis1_speed: Speed value to set on axis, in radians per second. Speed will be maintained until new value set
         """
+        # TODO(LOGGING) Log appending hing_joint message
         self.cycle_message += ef.hinge_joint(name=name, ax1=axis1_speed)
 
     def set_universal_joint(self, name: str, axis1_speed: float, axis2_speed: float):
@@ -44,6 +48,7 @@ class BaseAgent(SimSparkServer):
             axis1_speed: Speed value to set on axis, in radians per second. Speed will be maintained until new value set
             axis2_speed: Speed value to set on axis, in radians per second. Speed will be maintained until new value set
         """
+        # TODO(LOGGING) Log appending universal_joint message
         self.cycle_message += ef.universal_joint(name=name, ax1=axis1_speed, ax2=axis2_speed)
 
     def beam(self, x_pos: float, y_pos: float, direction: float):
@@ -55,6 +60,8 @@ class BaseAgent(SimSparkServer):
             y_pos: Y coordinate of player
             direction: Direction of player. 0 points to +X axis, 90 points to +Y axis
         """
+        # TODO(GENERAL) Figure out when to use beam message
+        # TODO(LOGGING) Log appending beam message
         self.cycle_message += ef.beam(x=x_pos, y=y_pos, rot=direction)
 
     def say(self, message):
@@ -64,6 +71,7 @@ class BaseAgent(SimSparkServer):
         Args:
             message: message to broadcast
         """
+        # TODO(LOGGING) Log appending say message
         self.cycle_message += ef.say(message=message)
 
     # Server stuff
@@ -74,6 +82,7 @@ class BaseAgent(SimSparkServer):
 
     def _initialize_on_server(self):
         """Creates player model, and registers on a team"""
+        # TODO(LOGGING) Log initializing agent on server
         self.send_message(ef.create(filename=self.model_path))
         self.send_message(ef.init(playernumber=self.player_number,
                                   teamname=self.teamname))
@@ -89,7 +98,9 @@ class BaseAgent(SimSparkServer):
         self.connect()
         self._initialize_on_server()
 
+        # TODO(LOGGING) Log start of agent loop
         while True:
+            # TODO(LOGGING) Log begging of each cycle
             # Get and process preceptors data from server
             preceptor_data = self._parse_preceptors(self.receive_message())
 
@@ -102,5 +113,6 @@ class BaseAgent(SimSparkServer):
             # Send entire message
             self.send_message(self.cycle_message)
 
-            # Prepare for next cycle
+            # Reset cycle message for next cycle
             self.cycle_message = ""
+            # TODO(LOGGING) Log end of each cycle

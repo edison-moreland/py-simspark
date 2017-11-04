@@ -4,6 +4,7 @@ import random as rand
 from agent import BaseAgent
 
 HOST, PORT = sys.argv[1:]
+PORT = int(PORT)
 
 
 class ExampleAgent(BaseAgent):

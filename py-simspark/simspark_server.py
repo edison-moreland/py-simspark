@@ -1,15 +1,6 @@
 import socket
 import struct
-import sys
-import logging
-
-
-class SimSparkServerError(BaseException):
-    pass
-
-
-class NoResponseError(SimSparkServerError):
-    pass
+from .exceptions import NoResponseError
 
 
 class SimSparkServer(object):
@@ -27,7 +18,7 @@ class SimSparkServer(object):
 
         # Initialize socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(timeout=timeout)
+        self.sock.settimeout(timeout)
 
     def connect(self):
         """Connect socket to SimSpark server"""
@@ -78,13 +69,24 @@ class SimSparkServer(object):
             str
         """
         # Messages are prefixed with length of payload as a 32 bit unsigned integer
-        prefix_raw = self.sock.recv(4)
-        try:
-            payload_length = struct.unpack("!I", prefix_raw)
+        for i, _ in enumerate(range(self.retries)):
+            prefix_raw = self.sock.recv(4)
 
-        except struct.error:
-            # TODO(LOGGING) Log this error
-            raise NoResponseError("No data received from server, it probably stopped. Exiting")
+            try:
+                assert prefix_raw != b''  # Throw error if prefix_raw is empty
+
+            except AssertionError:
+                # TODO(LOGGING): Log this better
+                print("No data returned from server, retrying {}/{}".format(i, self.retries))
+                continue  # restart loop if no data from server
+
+            break  # break from loop if server returned data
+
+        else:
+            # Never broke from loop, so server never returned data
+            raise NoResponseError("No data received from server, is it still running?")
+
+        payload_length = struct.unpack("!I", prefix_raw)
 
         # get rest of data
         raw_payload = self.sock.recv(payload_length[0])
